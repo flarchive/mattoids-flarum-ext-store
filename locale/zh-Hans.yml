@@ -1,0 +1,230 @@
+mattoid-store:
+  admin:
+    settings:
+      store-name: 商店名称
+      store-name-requirement: 商店名称会显示在首页菜单与标题栏
+      store-timezone: 时区设置
+      store-timezone-requirement: 设置时区。默认为 "Asia/Shanghai"
+      group-view: 允许用户组访问商店
+      group-moderate: 允许用户组管理商店商品
+      add-store-goods: 添加商品
+      search-goods-placeholder: 按商品名称搜索
+      edit-store-goods: 修改商品
+      goods-status: 商品状态
+      goods-title: 商品名称
+      goods-code: 商品编码
+      goods-desc: 商品描述
+      goods-price: 价格
+      goods-stock: 库存
+      goods-discount: 折扣(%)
+      goods-discount-limit: 折扣时限
+      goods-discount-limit-unit: 单位
+      goods-type: 购买类型
+      goods-outtime: 商品有效期
+      goods-icon: 商品图标
+      goods-upload-button: 上传
+      goods-hide: 无权限时隐藏商品
+      goods-repeat: 允许重复购买
+      goods-edit: 编辑
+      goods-delete: 删除
+      goods-item-delete: 确定要删除该物品吗？
+      goods-item-status-0: 确定要上架该物品吗？
+      goods-item-status-1: 确定要下架该物品吗？
+      goods-restore: 恢复
+      goods-item-restore: 恢复该商品？恢复后处于下架状态，需手动重新上架。
+      show-icon-button: 图库
+      goods-icon-back: 返回
+      goods-icon-effect-preview: 样式预览效果
+      goods-auto-deduction: 自动扣费
+      goods-usable: 进背包
+      goods-use-type: 使用方式
+      goods-subtype: 道具类型
+      goods-subtype-none: 无
+      goods-group: 商品分组
+      goods-group-placeholder: 留空继承插件分组
+      section-basic: 基本信息
+      section-settings: 商店设置
+      section-goods: 商品管理
+      section-price: 价格与折扣
+      section-validity: 有效期
+      section-purchase-limit: 限购设置
+      section-plugin: 插件扩展设置
+      section-item: 道具设置
+      section-icon: 图标
+      goods-icon-hint: 支持图片地址、视频地址或装饰样式类名（如用户名颜色样式类）
+      goods-purchase-limit-enable: 开启限购
+      goods-purchase-limit-count: 限购数量
+      goods-purchase-limit-period: 限购周期（0:终身限购）
+      goods-purchase-limit-period-unit: 周期单位
+      days: 天
+      gift-goods: 赠送
+      gift-goods-title: 赠送商品：{title}
+      gift-target: 赠送对象
+      gift-all-users: 全体用户
+      gift-select-users: 选择用户
+      gift-search-user-placeholder: 按用户名搜索
+      gift-all-users-warning: 警告：将向全部用户赠送该商品，操作不可逆，请谨慎执行。
+      gift-all-users-confirm: 确定要向全体用户赠送该商品吗？该操作不可逆。
+      gift-amount: 每人赠送数量
+      gift-amount-invalid: 数量无效（1-99）
+      gift-outtime: 赠送时限（天）
+      gift-outtime-help: 留空则使用商品上架配置（{days} 天）；填写后覆盖上架配置，受赠者的有效期以填写值为准
+      gift-outtime-invalid: 时限无效，必须是不小于 1 的整数
+      gift-result-success: 赠送成功：{users} 个用户，共 {count} 件。
+      gift-result-failed-stock: 库存不足，跳过 {count} 个用户。
+      gift-result-failed-owned: 对方已拥有该商品，跳过 {count} 个用户。
+      gift-result-failed-other: 其他错误，跳过 {count} 个用户。
+
+    error:
+      invalid-product: 无效商品
+      invalid-params: 请求参数无效
+      validate-fail: 购买物品失败
+
+  forum:
+    title: 商店
+    gift-goods: 赠送商品
+    gift-goods-title: 赠送商品给 {username}
+    gift-target-user: 目标用户
+    gift-select-goods: 选择商品
+    gift-select-goods-placeholder: 请选择要赠送的商品
+    gift-amount: 赠送数量
+    gift-amount-invalid: 数量无效（1-99）
+    gift-result-success: 赠送成功，共 {count} 件。
+    gift-result-failed-owned: 对方已拥有该商品，赠送未完成。
+    button: 购买
+    no-permission-buy: 无购买权限
+    backpack: 背包
+    buy-goods: 购买商品：{title}
+    buy-goods-fail: 商品退款：{title}
+    auto-deduction: 商品自动扣费：{title}
+
+    # 资金流水文案（huoxin/money-with-history 历史记录通过 source_key 引用）
+    money-history:
+      buy-goods: 购买商品：{title}
+      buy-goods-fail: 商品退款：{title}
+      auto-deduction: 商品自动扣费：{title}
+    infinite: 无限
+    free: 免费
+    days: 天
+    cart: 购买记录
+    sold-out: 售罄
+
+    notification:
+      notify_gift_label: 商店赠送与到期通知
+      gift-received: 你收到了赠送的商品：{title}
+      goods-invalid: 你的道具"{title}"已到期
+
+    error:
+      insufficient-inventory: 库存不足
+      user-balance-low: 用户余额不足
+      limit-outtime-required: 限时商品必须设置大于 0 的有效天数
+      store-goods-non-existent: 商品不存在或已下架
+      validate-fail: 购买物品失败
+      cannot-purchase-repeatedly: 有效期内不允许重复购买
+      gift-already-owned: 对方已拥有「{title}」，该商品不允许重复持有
+      gift-too-many-users: 单次最多指定 {count} 个用户，请分批赠送
+      buy-goods-fail: 购买【{title}】失败
+      file-exist: 文件已存在
+      automatic-renewal: 未开启自动续费
+      invalid-product: 无效商品
+      automatic-renewal-fail: 自动续费失败【{message}】
+      goods-invalid-fail: 商品失效逻辑执行失败【{message}】
+      goods-invalid-event-fail: 商品失效事件推送失败【{message}】
+      request-processing: 请求处理中，请勿重复提交
+      buy-success: 购买成功
+      purchase-limit-exceeded: 已达本周期限购数量，请稍后再购买
+      purchase-limit-exceeded-period: 已达限购上限（每 {period} {unit} 限购 {count} 件），请于 {time} 后再购买
+      purchase-limit-exceeded-lifetime: 该商品终身限购 {count} 件，您已购满
+      cart-no-use: 该商品没有使用功能
+      cart-use-fail: 商品使用失败
+      cart-status-changed: 道具状态已变化，请刷新后重试
+      cart-not-subscribable: 该商品不支持取消订阅
+
+  lib:
+    class-icon-preview: 样式预览
+    item-status-all: 全部商品状态
+    item-status-up: 上架
+    item-status-down: 下架
+    item-type-all: 全部购买类型
+    item-type-permanent: 永久有效
+    item-type-limit: 限时有效
+    item-limit-unit-days: 天
+    item-limit-unit-hour: 小时
+    item-limit-unit-minute: 分钟
+    item-limit-unit-second: 秒
+
+    item-cart-status-all: 全部支付状态
+    item-cart-status-0: 未支付
+    item-cart-status-1: 已支付
+    item-cart-status-2: 已失效
+    item-cart-status-3: 已使用
+    item-cart-status-9: 超时失效
+    item-cart-status-unknown: 未知
+
+    item-cart-type-all: 全部购买类型
+    item-cart-type-permanent: 永久有效
+    item-cart-type-limit: 限时有效
+
+    item-cart-auto-deduction-all: 全部续期类型
+    item-cart-auto-deduction-0: 不续期
+    item-cart-auto-deduction-1: 自动续期
+
+    item-id: ID
+    item-desc: 商品描述
+    item-title: 商品名称
+    item-status: 商品状态
+    item-status-0: 下架
+    item-status-1: 上架
+    item-status-trashed: 已删除
+    item-price: 价格
+    item-stock: 库存
+    infinite: 无限
+    free: 免费
+    item-discount: 折扣
+    item-discount_limit: 折扣期限
+    item-type: 购买类型
+    item-created-at: 添加时间
+
+    list-empty: 这里空空如也
+    list-load-more: 更多
+
+    item-invalid: 自动续费
+
+    item-cart-title: 商品名称
+    item-cart-status: 支付状态
+    item-cart-price: 续费价格
+    item-cart-pay-amt: 支付金额
+    item-cart-type: 商品类型
+    item-cart-outtime: 到期时间
+    item-cart-auto-deduction: 自动续费
+    item-cart-created: 购买时间
+
+    item-cart-button-use: 使用
+    item-cart-button-cancel: 取消
+
+    item-use-type-permanent: 永久道具
+    item-use-type-consumable: 一次性道具
+    item-use-type-limit: 限时道具
+    backpack-use: 使用
+    backpack-cancel-use: 取消使用
+    backpack-remaining: 剩余 {count} 件
+    backpack-equip: 佩戴
+    backpack-unequip: 卸下
+    backpack-in-use: 使用中
+    backpack-cancel-subscribe: 取消订阅
+    backpack-cancel-subscribe-success: 已取消订阅「{title}」，到期后将自动失效并从背包中移除
+    backpack-empty: 背包空空如也
+    backpack-use-fail: 操作失败，请稍后重试
+
+    filter-all: 全部
+    filter-group: 分组
+    group-default: 默认
+    filter-code: 商品插件
+    filter-subtype: 道具类型
+    filter-type: 有效期
+    filter-discount: 折扣
+    filter-discount-on: 有折扣
+    filter-discount-off: 无折扣
+
+    cancel: 取消
+    confirm: 确定
