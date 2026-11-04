@@ -2,13 +2,24 @@
 
 > **Read-only archive of released versions of mattoid/flarum-ext-store.** Not for installation: use [Packagist](https://packagist.org/packages/mattoid/flarum-ext-store) or the [upstream repository](https://github.com/Mattoids/flarum-ext-store).
 
-**0** versions archived · Latest: [`1.3.4.2`](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.3.4.2) · License: `MIT` · Flarum: `^1.2.0`
+**35** versions archived · Latest: [`1.3.4.2`](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.3.4.2) · License: `MIT` · Flarum: `^1.2.0`
 
 ## Archived Versions
 
 | Version | Released | Flarum | Source |
 |---|---|---|---|
-| — | — | — | — |
+| `1.0.0` | 2024-07-01 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.0) |
+| `1.0.12` | 2024-07-19 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.12) |
+| `1.0.2` | 2024-07-01 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.2) |
+| `1.0.3` | 2024-07-01 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.3) |
+| `1.0.4` | 2024-07-01 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.4) |
+| `1.0.7` | 2024-07-04 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.7) |
+| `1.0.8` | 2024-07-06 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.0.8) |
+| `1.1.0` | 2024-07-19 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.1.0) |
+| `1.1.1` | 2024-09-10 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.1.1) |
+| `1.1.10` | 2024-09-12 | `^1.2.0` | [Browse](https://github.com/flarchive/mattoids-flarum-ext-store/tree/archive/v1.1.10) |
+
+[View all 35 versions](https://github.com/flarchive/mattoids-flarum-ext-store/tags)
 
 Catalog entry: [packages/mattoids-flarum-ext-store.json](https://github.com/flarchive/archive-index/blob/main/packages/mattoids-flarum-ext-store.json)
 
