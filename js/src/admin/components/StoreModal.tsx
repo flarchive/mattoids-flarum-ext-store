@@ -1,0 +1,154 @@
+import app from 'flarum/admin/app';
+import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
+import type Mithril from 'mithril';
+import Button from 'flarum/common/components/Button';
+
+export interface IStoreModalAttrs extends IInternalModalAttrs {
+  title: string;
+  storeData: StoreItemData;
+  /** 操作成功回调（删除时父组件把该行从列表移除，替代整页 reload） */
+  onSuccess?: () => void;
+}
+
+export default class StoreModal extends Modal<IStoreModalAttrs> {
+  private type: string = '';
+  private storeData: StoreItemData = {} as StoreItemData;
+
+  oninit(vnode: Mithril.Vnode<IStoreModalAttrs, this>) {
+    super.oninit(vnode);
+    this.type = this.attrs.title;
+    this.storeData = this.attrs.storeData;
+  }
+
+  className(): string {
+    return 'Modal--small StoreConfirmModal';
+  }
+
+  title(): Mithril.Children {
+    return app.translator.trans('mattoid-store.admin.settings.goods-item-' + this.type);
+  }
+
+  content(): Mithril.Children {
+    const isDelete = this.type === 'delete';
+    const isRestore = this.type === 'restore';
+    const icon = this.storeData.icon || this.storeData.pluginIcon;
+    const extIcon = this.storeData.pluginExtIcon;
+    const isVideo = icon && icon.slice(-5) === '.webm';
+    // CSS 类名 icon（如用户名颜色 decorationStoreColorText2）不能作为图片地址
+    const isClassIcon = icon && icon.indexOf('/') === -1 && icon.indexOf('.') === -1;
+
+    return (
+      <div className="Modal-body">
+        <div className="StoreConfirmBody">
+          <div className={'StoreConfirmIcon' + (isDelete ? ' StoreConfirmIcon--danger' : '')}>
+            {icon ? (
+              isClassIcon ? (
+                <span className={'StoreIconClassPreview ' + icon}>{app.translator.trans('mattoid-store.lib.class-icon-preview')}</span>
+              ) : isVideo ? (
+                <video autoplay loop muted playsinline>
+                  <source src={icon} type="video/webm" />
+                </video>
+              ) : (
+                <img src={icon} alt={this.storeData.title || ''} />
+              )
+            ) : extIcon && (extIcon.name || extIcon.backgroundImage) ? (
+              <span
+                className="StoreAdminItem-extIcon"
+                style={{
+                  backgroundColor: extIcon.backgroundColor,
+                  color: extIcon.color,
+                  backgroundImage: extIcon.backgroundImage,
+                }}
+              >
+                {extIcon.name ? <i className={extIcon.name} /> : ''}
+              </span>
+            ) : (
+              <i className={'fas ' + (isDelete ? 'fa-trash-alt' : isRestore ? 'fa-undo' : 'fa-exchange-alt')} />
+            )}
+          </div>
+          <div className="StoreConfirmText">
+            <div className="StoreConfirmTitle">{this.storeData.title}</div>
+            <div className="StoreConfirmDesc">{app.translator.trans('mattoid-store.admin.settings.goods-item-' + this.type)}</div>
+          </div>
+        </div>
+        <div className="StoreConfirmActions">
+          {Button.component(
+            {
+              className: 'Button ' + (isDelete ? 'Button--danger' : 'Button--primary'),
+              type: 'submit',
+              loading: this.loading,
+            },
+            app.translator.trans('mattoid-store.lib.confirm')
+          )}
+          {Button.component(
+            {
+              className: 'Button storeButton--gray',
+              loading: this.loading,
+              onclick: () => {
+                this.hide();
+              },
+            },
+            app.translator.trans('mattoid-store.lib.cancel')
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  onsubmit(e: Event) {
+    e.preventDefault();
+
+    this.loading = true;
+
+    const isRestore = this.type === 'restore';
+    // 上下架/删除都要先翻转 status 再提交（PUT 依赖翻转后的值）
+    const status = this.storeData.status;
+    if (!isRestore) {
+      this.storeData.status = this.storeData.status ? 0 : 1;
+    }
+
+    if (this.type === 'delete') {
+      app
+        .request({
+          method: 'DELETE',
+          url: app.forum.attribute('apiUrl') + '/store/goods',
+          body: this.storeData,
+        })
+        .then(
+          () => {
+            this.loading = false;
+            if (this.attrs.onSuccess) {
+              this.attrs.onSuccess();
+            }
+            this.hide();
+          },
+          (error: any) => {
+            this.loading = false;
+            this.storeData.status = status;
+            this.onerror(error);
+          }
+        );
+      return;
+    }
+
+    app
+      .request({
+        method: isRestore ? 'POST' : 'PUT',
+        url: app.forum.attribute('apiUrl') + (isRestore ? '/store/goods/restore' : '/store/goods'),
+        body: this.storeData,
+      })
+      .then(
+        () => {
+          this.loading = false;
+          if (this.attrs.onSuccess) {
+            this.attrs.onSuccess();
+          }
+          this.hide();
+        },
+        (error: any) => {
+          this.loading = false;
+          this.onerror(error);
+        }
+      );
+  }
+}

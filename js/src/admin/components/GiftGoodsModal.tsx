@@ -1,0 +1,347 @@
+import app from 'flarum/admin/app';
+import Modal from 'flarum/common/components/Modal';
+import Button from 'flarum/common/components/Button';
+import Stream from 'flarum/common/utils/Stream';
+import extractText from 'flarum/common/utils/extractText';
+
+export default class GiftGoodsModal extends Modal {
+  private storeData: any = {};
+  private allUsers: boolean = false;
+  private amount: any = Stream('1');
+  // 赠送时限（天）：仅限时商品可填，留空则用商品上架配置
+  private outtimeDays: any = Stream('');
+  private selectedUsers: any[] = [];
+  private search: string = '';
+  private searchResults: any[] = [];
+  private confirmed: boolean = false;
+  private result: any = null;
+  private searchTimer: any = null;
+  private searchSeq: number = 0;
+
+  oninit(vnode) {
+    super.oninit(vnode);
+    this.storeData = this.attrs.storeData;
+  }
+
+  onremove(vnode) {
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+  }
+
+  className() {
+    return 'Modal--small GiftGoodsModal';
+  }
+
+  title() {
+    return app.translator.trans('mattoid-store.admin.settings.gift-goods-title', { title: this.storeData.title });
+  }
+
+  content() {
+    if (this.result) {
+      return this.renderResult();
+    }
+
+    return (
+      <div className="Modal-body">
+        <form
+          onsubmit={(e) => {
+            e.preventDefault();
+            this.onsubmit(e);
+          }}
+        >
+          <div className="Form-group">
+            <label>{app.translator.trans('mattoid-store.admin.settings.gift-target')}</label>
+            <div>
+              <label className="checkbox">
+                <input
+                  type="checkbox"
+                  checked={this.allUsers}
+                  onchange={(e: InputEvent) => {
+                    this.allUsers = (e.target as HTMLInputElement).checked;
+                  }}
+                />
+                {app.translator.trans('mattoid-store.admin.settings.gift-all-users')}
+              </label>
+            </div>
+          </div>
+
+          {!this.allUsers && (
+            <div className="Form-group">
+              <label>{app.translator.trans('mattoid-store.admin.settings.gift-select-users')}</label>
+              {this.selectedUsers.length > 0 && (
+                <div className="GiftGoodsModal-selected">
+                  {this.selectedUsers.map((user, index) => (
+                    <span className="StoreCodeChip" key={user.id()}>
+                      {user.displayName() || user.username()}
+                      <button
+                        type="button"
+                        className="GiftGoodsModal-remove"
+                        aria-label={extractText(app.translator.trans('mattoid-store.admin.settings.goods-delete'))}
+                        onclick={() => {
+                          this.selectedUsers.splice(index, 1);
+                        }}
+                      >
+                        <i className="fas fa-times" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <input
+                className="FormControl"
+                type="text"
+                value={this.search}
+                placeholder={app.translator.trans('mattoid-store.admin.settings.gift-search-user-placeholder')}
+                oninput={(e: InputEvent) => {
+                  this.search = (e.target as HTMLInputElement).value;
+                  this.queueSearch();
+                }}
+                onkeydown={(e: KeyboardEvent) => {
+                  // 阻止回车触发表单提交（本意只是搜索）
+                  if (e.key === 'Enter') e.preventDefault();
+                }}
+              />
+              {this.searchResults.length > 0 && (
+                <ul className="GiftGoodsModal-results">
+                  {this.searchResults.map((user) => (
+                    <li key={user.id()} onclick={() => this.addUser(user)}>
+                      {user.displayName() || user.username()}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {this.allUsers && (
+            <div className="Form-group GiftGoodsModal-warning">
+              <i className="fas fa-exclamation-triangle" />
+              {app.translator.trans('mattoid-store.admin.settings.gift-all-users-warning')}
+            </div>
+          )}
+
+          <div className="Form-group">
+            <label>{app.translator.trans('mattoid-store.admin.settings.gift-amount')}</label>
+            <input
+              className="FormControl"
+              type="number"
+              min="1"
+              max="99"
+              value={this.amount()}
+              oninput={(e: InputEvent) => {
+                this.amount((e.target as HTMLInputElement).value);
+              }}
+            />
+          </div>
+
+          {this.storeData.type === 'limit' && (
+            <div className="Form-group">
+              <label>{app.translator.trans('mattoid-store.admin.settings.gift-outtime')}</label>
+              <input
+                className="FormControl"
+                type="number"
+                min="1"
+                placeholder={this.storeData.outtime ? String(this.storeData.outtime) : ''}
+                value={this.outtimeDays()}
+                oninput={(e: InputEvent) => {
+                  this.outtimeDays((e.target as HTMLInputElement).value);
+                }}
+              />
+              <div className="helpText">
+                {app.translator.trans('mattoid-store.admin.settings.gift-outtime-help', { days: this.storeData.outtime })}
+              </div>
+            </div>
+          )}
+
+          <div className="Form-group StoreConfirmActions">
+            <Button
+              className="Button Button--primary"
+              type="submit"
+              loading={this.loading}
+              disabled={!this.allUsers && this.selectedUsers.length === 0}
+            >
+              {app.translator.trans('mattoid-store.lib.confirm')}
+            </Button>
+            <Button className="Button storeButton--gray" onclick={() => this.hide()}>
+              {app.translator.trans('mattoid-store.lib.cancel')}
+            </Button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  renderResult() {
+    const failed = this.result.failed || {};
+    return (
+      <div className="Modal-body">
+        <div className="Form-group">
+          <p>
+            {app.translator.trans('mattoid-store.admin.settings.gift-result-success', {
+              users: this.result.successUsers,
+              count: this.result.successCount,
+            })}
+          </p>
+          {(failed.insufficientStock > 0 || failed.alreadyOwned > 0 || failed.other > 0) && (
+            <div className="GiftGoodsModal-warning">
+              {failed.insufficientStock > 0 && (
+                <p>{app.translator.trans('mattoid-store.admin.settings.gift-result-failed-stock', { count: failed.insufficientStock })}</p>
+              )}
+              {failed.alreadyOwned > 0 && (
+                <p>{app.translator.trans('mattoid-store.admin.settings.gift-result-failed-owned', { count: failed.alreadyOwned })}</p>
+              )}
+              {failed.other > 0 && <p>{app.translator.trans('mattoid-store.admin.settings.gift-result-failed-other', { count: failed.other })}</p>}
+            </div>
+          )}
+        </div>
+        <div className="Form-group StoreConfirmActions">
+          <Button className="Button Button--primary" onclick={() => this.hide()}>
+            {app.translator.trans('mattoid-store.lib.confirm')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * 300ms 防抖，避免每击键一次 API 请求
+   */
+  queueSearch() {
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+    }
+    this.searchTimer = setTimeout(() => {
+      this.searchTimer = null;
+      this.searchUsers();
+    }, 300);
+  }
+
+  searchUsers() {
+    const keyword = this.search.trim();
+    if (!keyword) {
+      this.searchResults = [];
+      return;
+    }
+    const seq = ++this.searchSeq;
+    app.store
+      .find('users', { filter: { q: keyword }, page: { limit: 10 } })
+      .then((results) => {
+        if (seq !== this.searchSeq) return;
+        this.searchResults = results.filter((user) => {
+          return !this.selectedUsers.some((selected) => selected.id() === user.id());
+        });
+      })
+      .catch(() => {})
+      .then(() => {
+        m.redraw();
+      });
+  }
+
+  addUser(user) {
+    if (this.selectedUsers.some((selected) => selected.id() === user.id())) return;
+    this.selectedUsers.push(user);
+    this.searchResults = this.searchResults.filter((item) => item.id() !== user.id());
+  }
+
+  onsubmit() {
+    if (this.allUsers && !this.confirmed) {
+      // 全体用户模式：二次确认
+      if (!confirm(app.translator.trans('mattoid-store.admin.settings.gift-all-users-confirm'))) {
+        return;
+      }
+      this.confirmed = true;
+    }
+
+    const amount = parseInt(this.amount(), 10);
+    if (!amount || amount < 1 || amount > 99) {
+      this.onerror(new Error(extractText(app.translator.trans('mattoid-store.admin.settings.gift-amount-invalid'))));
+      return;
+    }
+
+    // 赠送时限：-1 表示留空（用商品上架配置）；0 = 不限时（转为永久）；>0 = 指定天数
+    let outtimeDays = -1;
+    if (this.storeData.type === 'limit' && String(this.outtimeDays()).trim() !== '') {
+      outtimeDays = parseInt(this.outtimeDays(), 10);
+      if (isNaN(outtimeDays) || outtimeDays < 0) {
+        this.onerror(new Error(extractText(app.translator.trans('mattoid-store.admin.settings.gift-outtime-invalid'))));
+        return;
+      }
+    }
+
+    this.loading = true;
+
+    if (this.allUsers) {
+      // 全体用户模式：后端按批次返回 nextCursor 断点续传，前端循环取尽后合并计数一次性展示
+      this.giftAllUsers(amount, outtimeDays, null, {
+        successUsers: 0,
+        successCount: 0,
+        failed: { insufficientStock: 0, alreadyOwned: 0, other: 0 },
+      });
+      return;
+    }
+
+    app
+      .request({
+        method: 'POST',
+        url: app.forum.attribute('apiUrl') + '/store/gift/goods',
+        body: {
+          storeId: this.storeData.id,
+          userIds: this.selectedUsers.map((user) => user.id()),
+          allUsers: this.allUsers,
+          amount: amount,
+          outtimeDays: outtimeDays,
+        },
+      })
+      .then(
+        (result) => {
+          this.loading = false;
+          this.result = result;
+          m.redraw();
+        },
+        (error) => {
+          this.loading = false;
+          this.onerror(error);
+        }
+      );
+  }
+
+  giftAllUsers(amount: number, outtimeDays: number, cursor: string | null, acc: any) {
+    app
+      .request({
+        method: 'POST',
+        url: app.forum.attribute('apiUrl') + '/store/gift/goods',
+        body: {
+          storeId: this.storeData.id,
+          userIds: [],
+          allUsers: true,
+          amount: amount,
+          outtimeDays: outtimeDays,
+          cursor: cursor,
+        },
+      })
+      .then(
+        (result: any) => {
+          acc.successUsers += result.successUsers || 0;
+          acc.successCount += result.successCount || 0;
+          const failed = result.failed || {};
+          acc.failed.insufficientStock += failed.insufficientStock || 0;
+          acc.failed.alreadyOwned += failed.alreadyOwned || 0;
+          acc.failed.other += failed.other || 0;
+
+          if (result.nextCursor) {
+            this.giftAllUsers(amount, outtimeDays, result.nextCursor, acc);
+          } else {
+            this.loading = false;
+            this.result = acc;
+            m.redraw();
+          }
+        },
+        (error) => {
+          this.loading = false;
+          this.onerror(error);
+        }
+      );
+  }
+}

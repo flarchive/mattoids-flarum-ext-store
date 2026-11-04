@@ -1,0 +1,729 @@
+
+/* ============ 商品列表页 ============ */
+
+/* 面板：标题 + 内容分组 */
+.StoreAdminPanel {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.StoreAdminPanel-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-color);
+  border-bottom: 1px solid var(--control-bg);
+}
+.StoreAdminPanel-add {
+  margin-left: auto;
+}
+
+.StoreAdminToolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 6px 0 14px;
+}
+
+/* 下拉美化（与管理端工具条一致） */
+.StoreAdminToolbar .Select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: 8px;
+  padding: 6px 28px 6px 12px;
+  min-width: 110px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.StoreAdminToolbar .Select select:hover {
+  border-color: var(--muted-more-color);
+}
+.StoreAdminToolbar .Select select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent);
+}
+.StoreAdminToolbar .Select-caret {
+  margin-left: -24px;
+  color: var(--muted-color);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.StoreAdminList {
+  padding: 0;
+  list-style: none;
+}
+.StoreAdminList > li {
+  margin-top: 10px;
+}
+
+/* 商品行卡片 */
+.StoreAdminItem {
+  display: flex;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--control-bg);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.StoreAdminItem-icon {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--body-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.StoreAdminItem-icon img,
+.StoreAdminItem-icon video {
+  max-width: 64px;
+  max-height: 64px;
+  object-fit: contain;
+}
+.StoreAdminItem-icon .StoreIconClassPreview {
+  max-width: 64px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  word-break: break-all;
+}
+.StoreAdminItem-iconPlaceholder {
+  font-size: 26px;
+  color: var(--muted-more-color);
+}
+.StoreAdminItem-extIcon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 22px;
+  background-size: cover;
+  background-position: center;
+}
+.StorePluginCard-icon img {
+  max-width: 72px;
+  max-height: 72px;
+  object-fit: contain;
+}
+.StorePluginCard-extIcon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 28px;
+  background-size: cover;
+  background-position: center;
+}
+.StoreAdminItem-main {
+  flex: 1;
+  min-width: 0;
+}
+.StoreAdminItem-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.StoreAdminItem-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.StoreAdminItem-desc {
+  color: var(--muted-color);
+  font-size: 13px;
+  margin-top: 4px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.StoreAdminItem-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.StoreAdminItem-meta > span {
+  background: var(--body-bg);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  color: var(--muted-color);
+}
+.StoreAdminItem-meta > span b {
+  color: var(--text-color);
+  font-weight: 600;
+}
+.StoreAdminItem-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .StoreAdminItem {
+    flex-wrap: wrap;
+  }
+  .StoreAdminItem-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* 状态徽章 */
+.StoreBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.StoreBadge--success {
+  color: var(--alert-success-color);
+  background: color-mix(in srgb, var(--alert-success-color) 14%, transparent);
+}
+.StoreBadge--muted {
+  color: var(--muted-color);
+  background: var(--control-bg);
+}
+
+/* 空态提示 */
+.StoreAdminEmpty {
+  padding: 40px 0;
+  text-align: center;
+  font-size: 1.2em;
+  color: var(--muted-more-color);
+}
+
+/* 添加商品弹窗：插件卡片网格 */
+.StorePluginSearch {
+  padding: 0 8px 12px;
+
+  .FormControl {
+    width: 100%;
+  }
+}
+.StorePluginGridScroll {
+  max-height: 460px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+.StorePluginGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 4px 8px 8px;
+}
+.StorePluginCard {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  background: var(--control-bg);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.StorePluginCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+.StorePluginCard-title {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 2.8em;
+}
+.StorePluginCard-icon {
+  height: 90px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--body-bg);
+  border-radius: 8px;
+  font-size: 38px;
+  color: var(--muted-more-color);
+}
+.StorePluginCard-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 26px;
+}
+.StorePluginRow-tag {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--body-bg);
+  color: var(--muted-color);
+  font-size: 12px;
+}
+.StorePluginCard-footer {
+  margin-top: auto;
+  padding-top: 12px;
+}
+.StorePluginCard-footer .Button {
+  width: 100%;
+}
+
+/* 确认弹窗（上架/下架/删除） */
+.StoreConfirmModal .Modal-body {
+  padding-top: 24px;
+}
+.StoreConfirmBody {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.StoreConfirmIcon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 20px;
+  color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  overflow: hidden;
+}
+.StoreConfirmIcon img,
+.StoreConfirmIcon video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.StoreConfirmIcon .StoreIconClassPreview {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-all;
+}
+.StoreConfirmIcon--danger {
+  color: var(--alert-error-color);
+  background: color-mix(in srgb, var(--alert-error-color) 14%, transparent);
+}
+.StoreConfirmText {
+  min-width: 0;
+}
+.StoreConfirmTitle {
+  font-size: 15px;
+  font-weight: 600;
+  word-break: break-all;
+}
+.StoreConfirmDesc {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted-color);
+}
+.StoreConfirmActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--control-bg);
+}
+
+/* ============ 添加/编辑商品表单（卡片式布局） ============ */
+
+.StoreGoodsForm {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+/* 顶部状态栏 */
+.StoreGoodsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  background: var(--control-bg);
+  border-radius: 12px;
+}
+.StoreGoodsHeader-switches {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+.StoreGoodsHeader-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted-color);
+}
+.StoreGoodsHeader-code {
+  margin-left: auto;
+}
+
+/* 卡片分区 */
+.StoreAdminCard {
+  margin-top: 14px;
+  padding: 16px 18px 18px;
+  background: var(--control-bg);
+  border-radius: 12px;
+}
+.StoreAdminCard-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-color);
+}
+.StoreAdminCard-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--primary-color);
+}
+.StoreAdminCard--plugin .StoreAdminCard-title::before {
+  background: var(--alert-success-color, #7bc17c);
+}
+.StoreAdminCard-body .StoreAdminField:first-child {
+  margin-top: 0;
+}
+
+/* 响应式字段网格 */
+.StoreAdminGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: start;
+}
+.StoreAdminGrid .Select {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+.StoreAdminGrid .FormControl {
+  width: 100%;
+  min-width: 0;
+}
+/* 价格区：价格/库存/折扣固定同一行，折扣时限与单位次行 */
+.StoreAdminGrid--price {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+/* 道具设置区：固定三列，保证组/使用方式/类型水平对齐 */
+.StoreAdminGrid--3col {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+/* 限购区：开关/限购数量/限购周期/周期单位固定四列 */
+.StoreAdminGrid--4col {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* 开关类字段（使用方式/自动扣费/开启限购）与输入框垂直对齐 */
+.StoreAdminGrid .StoreAdminInline {
+  min-height: 36px;
+  align-items: center;
+}
+
+.StoreAdminField {
+  margin-top: 14px;
+}
+/* 网格内所有字段统一间距，避免首列因 :first-child 规则被清零导致错行 */
+.StoreAdminCard-body .StoreAdminGrid .StoreAdminField {
+  margin-top: 14px;
+}
+.StoreAdminCard-body .StoreAdminGrid .StoreAdminField:first-child {
+  margin-top: 14px;
+}
+.StoreAdminField > label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-color);
+  margin-bottom: 6px;
+}
+.StoreAdminRow {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.StoreAdminRow .StoreAdminField {
+  flex: 1;
+  min-width: 170px;
+}
+.StoreAdminInline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.StoreAdminUnit {
+  color: var(--muted-color);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.StoreCodeChip {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary-color) 13%, transparent);
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  border-bottom: none !important;
+}
+
+/* 赠送商品弹窗（GiftGoodsModal） */
+.GiftGoodsModal-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.GiftGoodsModal-remove {
+  margin-left: 6px;
+  opacity: 0.7;
+  cursor: pointer;
+  &:hover { opacity: 1; }
+}
+.GiftGoodsModal-results {
+  margin: 6px 0 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  li {
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    &:hover {
+      background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+    }
+  }
+}
+.GiftGoodsModal-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--alert-warning-bg, rgba(255, 170, 0, 0.12));
+  color: var(--alert-warning-color, #b98a00);
+  font-size: 13px;
+}
+
+/* 弹窗内的下拉，与工具条同款风格 */
+.StoreGoodsModal .Select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background-color: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: 8px;
+  padding: 7px 26px 7px 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.StoreGoodsModal .Select select:hover {
+  border-color: var(--muted-more-color);
+}
+.StoreGoodsModal .Select select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent);
+}
+.StoreGoodsModal .Select-caret {
+  margin-left: -20px;
+  color: var(--muted-color);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* 图标区：输入框 + 按钮占满一整行，预览单独一行 */
+.StoreAdminIconRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+.StoreAdminIconRow-main {
+  flex: 1;
+  min-width: 0;
+}
+.StoreAdminIconRow-main .StoreAdminField {
+  margin-top: 0;
+}
+.StoreAdminIconRow-preview {
+  margin-top: 0;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.StoreGoodsModal .StoreAdminInline .FormControl {
+  flex: 1;
+  min-width: 0;
+}
+.StoreGoodsModal .StoreAdminInline .Button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 图标预览 */
+.StoreIconPreview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  padding: 10px;
+  border: 1px solid var(--control-bg);
+  border-radius: 10px;
+  background: var(--body-bg);
+  overflow: hidden;
+}
+.StoreIconPreview img,
+.StoreIconPreview video {
+  max-width: 90px;
+  max-height: 90px;
+  object-fit: contain;
+}
+/* CSS 类名图标（如用户名颜色样式类）的效果预览：渲染真实装饰效果 + 类名标注 */
+.StoreIconEffectPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.StoreIconEffectPreview > div {
+  font-size: 18px;
+  line-height: 1.6;
+}
+.StoreIconEffectClassName {
+  font-size: 12px;
+  color: var(--muted-more-color);
+  word-break: break-all;
+}
+
+/* 提交按钮 */
+.StoreGoodsSubmit {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--control-bg);
+}
+.StoreGoodsSubmit .Button--primary {
+  padding: 8px 36px;
+  font-weight: 600;
+}
+
+/* 图标选择网格 */
+.icon-frame {
+  width: 116px;
+  height: 116px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--control-bg);
+  border-radius: 8px;
+  padding: 8px;
+  margin: 6px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.icon-frame:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 16%, transparent);
+}
+.icon-frame img,
+.icon-frame video {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+}
+
+/* ============ 通用工具类 ============ */
+
+.spacing {
+  margin-top: 15px;
+  font-weight: bold;
+}
+.center {
+  text-align: center;
+}
+.rightAligned {
+  float: right;
+}
+.leftAligned {
+  float: left;
+}
+.inlineBlock {
+  display: inline-block
+}
+.icon-size {
+  width: 80px;
+  height: 80px;
+}
+.red {
+  color: var(--alert-error-color, #ff0000);
+}
+.green {
+  color: var(--alert-success-color, #00b300);
+}
+.margin {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+.storeButton--gray {background-color:#ddd;color:var(--button-color);padding-left:20px;padding-right:20px;}
+.storeButton--gray:focus {background-color:#ddd;color:var(--button-color)}
+.storeButton--gray:hover {background-color:#c6c6c6;}
+.storeButton--gray:active {background-color:#c6c6c6;}
+.storeButton--gray:disabled {background-color:#eee;}
+.StoreAdminItem-statusUp {background-color:#58b658;color:#fff;}
+.StoreAdminItem-statusUp:focus {background-color:#58b658;color:#fff;}
+.StoreAdminItem-statusUp:hover {background-color:#48a048;color:#fff;}
+.StoreAdminItem-statusUp:active {background-color:#48a048;color:#fff;}
+.StoreAdminItem-statusUp:disabled {background-color:#8fce8f;color:#fff;}
