@@ -1,0 +1,107 @@
+import app from 'flarum/admin/app';
+import Component from 'flarum/common/Component';
+
+/**
+ * 管理端商品插件组件注册表
+ * Admin goods plugin component registry
+ *
+ * 商品插件（JS 端）在各自 admin initializer 中注册：
+ *   app.storeAdminRegistry.priceModal.register('vip', MyPriceModal);  // 商品价格弹窗
+ *   app.storeAdminRegistry.goodsForm.register('vip', MyFormFields);   // 添加/编辑商品表单扩展区
+ *   app.storeAdminRegistry.listItem.register('vip', MyListItem);      // 商品列表行展示
+ *
+ * goodsForm 支持注册选项：
+ *   { hideDefaultDesc: true }  隐藏商店弹窗自带的"商品描述"输入框
+ *                              （插件自己管理描述时使用，如 invite 的按权限双描述）
+ *
+ * iconPicker 注册表：接管商店弹窗"显示图标"面板（按商品 code），
+ * 商品插件可用自己的素材图库替换默认的上传图片列表：
+ *   app.storeAdminRegistry.iconPicker.register('decoration', MyPicker);
+ * 组件 props: { params: 弹窗的 Stream 参数, onSelect: (url) => void }
+ *
+ * 未注册时使用 store 扩展提供的默认组件。
+ */
+
+/**
+ * 商品价格弹窗 attrs（priceModal 槽位）
+ */
+export interface AdminPriceModalProps {
+  /** 商品数据 */
+  storeData: any;
+  /** 保存成功回调 */
+  onSaved?: () => void;
+}
+
+/**
+ * 商品表单扩展区 attrs（goodsForm 槽位）
+ */
+export interface AdminGoodsFormProps {
+  /** 弹窗的 Stream 参数 */
+  params: any;
+  /** 编辑时的商品数据（新增时为空） */
+  storeData?: any;
+}
+
+/**
+ * 商品列表行 attrs（listItem 槽位）
+ */
+export interface AdminListItemProps {
+  /** 商品资源（attributes 为商品数据） */
+  item: any;
+}
+
+/**
+ * 图标库接管组件 attrs（iconPicker 槽位）
+ */
+export interface AdminIconPickerProps {
+  /** 弹窗的 Stream 参数 */
+  params: any;
+  /** 选中图标回调 */
+  onSelect: (url: string) => void;
+}
+
+export interface GoodsFormOptions {
+  hideDefaultDesc?: boolean;
+}
+
+export class StoreAdminRegistry {
+  private map: Map<string, typeof Component> = new Map();
+  private options: Map<string, GoodsFormOptions> = new Map();
+
+  register(code: string, component: typeof Component, options: GoodsFormOptions = {}): void {
+    this.map.set(code, component);
+    this.options.set(code, options);
+  }
+
+  get(code: string): typeof Component | null {
+    return this.map.get(code) || null;
+  }
+
+  getOptions(code: string): GoodsFormOptions {
+    return this.options.get(code) || {};
+  }
+
+  has(code: string): boolean {
+    return this.map.has(code);
+  }
+}
+
+export interface StoreAdminRegistries {
+  priceModal: StoreAdminRegistry;
+  goodsForm: StoreAdminRegistry;
+  listItem: StoreAdminRegistry;
+  iconPicker: StoreAdminRegistry;
+}
+
+export default function initStoreAdminRegistry(): StoreAdminRegistries {
+  const registries: StoreAdminRegistries = {
+    priceModal: new StoreAdminRegistry(),
+    goodsForm: new StoreAdminRegistry(),
+    listItem: new StoreAdminRegistry(),
+    iconPicker: new StoreAdminRegistry(),
+  };
+
+  (app as any).storeAdminRegistry = registries;
+
+  return registries;
+}
