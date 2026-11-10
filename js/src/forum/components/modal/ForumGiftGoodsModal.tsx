@@ -1,0 +1,219 @@
+import app from 'flarum/forum/app';
+import Modal from 'flarum/common/components/Modal';
+import Button from 'flarum/common/components/Button';
+import Stream from 'flarum/common/utils/Stream';
+import extractText from 'flarum/common/utils/extractText';
+
+export default class ForumGiftGoodsModal extends Modal {
+  private user: any = null;
+  private goodsList: any[] = [];
+  private storeId: any = Stream('');
+  private amount: any = Stream('1');
+  // 赠送时限（天）：仅限时商品可填，留空 = 用商品上架配置，0 = 不限时，>0 = 指定天数
+  private outtimeDays: any = Stream('');
+  private result: any = null;
+
+  oninit(vnode) {
+    super.oninit(vnode);
+    this.user = this.attrs.user;
+
+    this.loading = true;
+    app.store
+      .find('/store/list', { filter: { status: '-1' }, page: { limit: 100 } })
+      .then((results) => {
+        this.goodsList = results && (results as any).payload ? (results as any).payload.data : [];
+      })
+      .catch(() => {
+        app.alerts.show({ type: 'error' }, app.translator.trans('mattoid-store.lib.backpack-use-fail'));
+      })
+      .then(() => {
+        this.loading = false;
+        m.redraw();
+      });
+  }
+
+  className() {
+    return 'Modal--small ForumGiftGoodsModal';
+  }
+
+  title() {
+    return app.translator.trans('mattoid-store.forum.gift-goods-title', { username: this.user.displayName() || this.user.username() });
+  }
+
+  content() {
+    if (this.result) {
+      return (
+        <div className="Modal-body">
+          <div className="Form-group">
+            <p>
+              {app.translator.trans('mattoid-store.forum.gift-result-success', {
+                count: this.result.successCount,
+              })}
+            </p>
+            {this.result.failed && this.result.failed.alreadyOwned > 0 && (
+              <p>{app.translator.trans('mattoid-store.forum.gift-result-failed-owned')}</p>
+            )}
+          </div>
+          <div className="Form-group StoreConfirmActions">
+            <Button className="Button Button--primary" onclick={() => this.hide()}>
+              {app.translator.trans('mattoid-store.lib.confirm')}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="Modal-body">
+        <form
+          onsubmit={(e) => {
+            e.preventDefault();
+            this.onsubmit(e);
+          }}
+        >
+          <div className="Form-group">
+            <label>{app.translator.trans('mattoid-store.forum.gift-target-user')}</label>
+            <div className="FormControl" disabled>
+              {this.user.displayName() || this.user.username()}
+            </div>
+          </div>
+
+          <div className="Form-group">
+            <label>{app.translator.trans('mattoid-store.forum.gift-select-goods')}</label>
+            <select
+              className="FormControl"
+              value={this.storeId()}
+              onchange={(e: InputEvent) => {
+                this.storeId((e.target as HTMLSelectElement).value);
+                // 切换商品时清空时限输入：placeholder 提示商品配置（限时=上架天数，永久=0），留空即以商品配置为准
+                this.outtimeDays('');
+                // 不允许重复购买的商品：数量固定为 1
+                if (!this.selectedGoodsRepeat()) {
+                  this.amount('1');
+                }
+              }}
+            >
+              <option value="">{app.translator.trans('mattoid-store.forum.gift-select-goods-placeholder')}</option>
+              {this.goodsList.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.attributes.title}
+                  {Number(item.attributes.status) !== 1 ? '（' + app.translator.trans('mattoid-store.lib.item-status-0') + '）' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="Form-group">
+            <label>{app.translator.trans('mattoid-store.forum.gift-amount')}</label>
+            <input
+              className="FormControl"
+              type="number"
+              min="1"
+              max="99"
+              value={this.amount()}
+              disabled={this.storeId() !== '' && !this.selectedGoodsRepeat()}
+              oninput={(e: InputEvent) => {
+                this.amount((e.target as HTMLInputElement).value);
+              }}
+            />
+            {this.storeId() !== '' && !this.selectedGoodsRepeat() && (
+              <div className="helpText">{app.translator.trans('mattoid-store.forum.gift-amount-unique')}</div>
+            )}
+          </div>
+
+          {this.storeId() && (
+            <div className="Form-group">
+              <label>{app.translator.trans('mattoid-store.forum.gift-outtime')}</label>
+              <input
+                className="FormControl"
+                type="number"
+                min="0"
+                placeholder={this.storeId() ? (this.selectedGoodsType() === 'limit' ? this.selectedGoodsOuttime() : '0') : ''}
+                value={this.outtimeDays()}
+                oninput={(e: InputEvent) => {
+                  this.outtimeDays((e.target as HTMLInputElement).value);
+                }}
+              />
+              <div className="helpText">
+                {this.selectedGoodsType() === 'limit'
+                  ? app.translator.trans('mattoid-store.forum.gift-outtime-help', { days: this.selectedGoodsOuttime() })
+                  : app.translator.trans('mattoid-store.forum.gift-outtime-help-permanent')}
+              </div>
+            </div>
+          )}
+
+          <div className="Form-group StoreConfirmActions">
+            <Button className="Button Button--primary" type="submit" loading={this.loading} disabled={!this.storeId()}>
+              {app.translator.trans('mattoid-store.lib.confirm')}
+            </Button>
+            <Button className="Button storeButton--gray" onclick={() => this.hide()}>
+              {app.translator.trans('mattoid-store.lib.cancel')}
+            </Button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  selectedGoodsType(): string {
+    const goods = this.goodsList.find((item) => String(item.id) === String(this.storeId()));
+    return goods ? goods.attributes.type : '';
+  }
+
+  selectedGoodsOuttime(): string {
+    const goods = this.goodsList.find((item) => String(item.id) === String(this.storeId()));
+    return goods ? String(goods.attributes.outtime || 0) : '0';
+  }
+
+  // 选中商品是否允许重复购买（repeat=1）；未选中时按允许处理
+  selectedGoodsRepeat(): boolean {
+    const goods = this.goodsList.find((item) => String(item.id) === String(this.storeId()));
+    return goods ? Number(goods.attributes.repeat) === 1 : true;
+  }
+
+  onsubmit() {
+    const amount = parseInt(this.amount(), 10);
+    if (!amount || amount < 1 || amount > 99) {
+      this.onerror(new Error(extractText(app.translator.trans('mattoid-store.forum.gift-amount-invalid'))));
+      return;
+    }
+    if (!this.storeId()) {
+      return;
+    }
+
+    // 赠送时限：-1 表示留空（限时商品用上架配置，永久商品保持永久）；0 = 不限时（转为永久）；>0 = 指定天数（转为限时）
+    let outtimeDays = -1;
+    if (String(this.outtimeDays()).trim() !== '') {
+      outtimeDays = parseInt(this.outtimeDays(), 10);
+      if (isNaN(outtimeDays) || outtimeDays < 0) {
+        this.onerror(new Error(extractText(app.translator.trans('mattoid-store.forum.gift-outtime-invalid'))));
+        return;
+      }
+    }
+
+    this.loading = true;
+
+    app
+      .request({
+        method: 'POST',
+        url: app.forum.attribute('apiUrl') + '/store/gift/goods',
+        body: {
+          storeId: this.storeId(),
+          userIds: [this.user.id()],
+          amount: amount,
+          outtimeDays: outtimeDays,
+        },
+      })
+      .then(
+        (result) => {
+          this.loading = false;
+          this.result = result;
+          m.redraw();
+        },
+        (error) => {
+          this.loading = false;
+          this.onerror(error);
+        }
+      );
+  }
+}
